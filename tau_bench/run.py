@@ -21,7 +21,7 @@ def run(config: RunConfig) -> List[EnvRunResult]:
     assert config.env in ["retail", "airline"], "Only retail and airline envs are supported"
     assert config.model_provider in provider_list, "Invalid model provider"
     assert config.user_model_provider in provider_list, "Invalid user model provider"
-    assert config.agent_strategy in ["tool-calling", "act", "react", "few-shot"], "Invalid agent strategy"
+    assert config.agent_strategy in ["tool-calling", "act", "react", "few-shot", "two-agent-handoff"], "Invalid agent strategy"
     assert config.task_split in ["train", "test", "dev"], "Invalid task split"
     assert config.user_strategy in [item.value for item in UserStrategy], "Invalid user strategy"
 
@@ -172,6 +172,24 @@ def agent_factory(
             provider=config.model_provider,
             few_shot_displays=few_shot_displays,
             temperature=config.temperature,
+        )
+    elif config.agent_strategy == "two-agent-handoff":
+        # upstream/downstream two-agent pipeline with a structured handoff package
+        from tau_bench.agents.two_agent_handoff_agent import TwoAgentHandoffAgent
+
+        return TwoAgentHandoffAgent(
+            tools_info=tools_info,
+            wiki=wiki,
+            domain=config.env,
+            agent_a_model=config.agent_a_model or config.model,
+            agent_a_provider=config.agent_a_model_provider or config.model_provider,
+            agent_b_model=config.agent_b_model or config.model,
+            agent_b_provider=config.agent_b_model_provider or config.model_provider,
+            builder_model=config.handoff_builder_model or config.model,
+            builder_provider=config.handoff_builder_model_provider
+            or config.model_provider,
+            temperature=config.temperature,
+            handoff_method=config.handoff_method,
         )
     else:
         raise ValueError(f"Unknown agent strategy: {config.agent_strategy}")

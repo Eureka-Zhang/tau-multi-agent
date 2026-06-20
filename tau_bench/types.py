@@ -88,3 +88,12 @@ class RunConfig(BaseModel):
     shuffle: int = 0
     user_strategy: str = "llm"
     few_shot_displays_path: Optional[str] = None
+    handoff_method: str = "structured"
+    # Per-role model overrides for the two-agent-handoff strategy. When None,
+    # they fall back to `model` / `model_provider`.
+    agent_a_model: Optional[str] = None
+    agent_a_model_provider: Optional[str] = None
+    agent_b_model: Optional[str] = None
+    agent_b_model_provider: Optional[str] = None
+    handoff_builder_model: Optional[str] = None
+    handoff_builder_model_provider: Optional[str] = None

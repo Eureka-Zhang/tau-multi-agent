@@ -1,6 +1,10 @@
 #Run result artifacts
 results/**
 
+# Local environment / secrets
+.env
+.env.local
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
